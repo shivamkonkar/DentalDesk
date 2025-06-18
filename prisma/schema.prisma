@@ -14,7 +14,7 @@ model Dentist {
   fullName         String?   @map("full_name") @db.VarChar(44)
   phone            String?   @db.VarChar(10)
   email            String?   @unique
-  clinicName       String    @map("clinic_name") @db.VarChar(44)
+  clinicName       String?   @map("clinic_name") @db.VarChar(44)
   clinicSlogan     String?   @map("clinic_slogan") @db.VarChar(100)
   clinicAddress    String?   @map("clinic_address") @db.VarChar(255)
   clinicLogo       String?   @map("clinic_logo") @db.VarChar(500)
