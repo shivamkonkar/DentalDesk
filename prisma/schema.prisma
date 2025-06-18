@@ -1,0 +1,76 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+model Dentist {
+  id               String    @id @db.Uuid
+  onboardingStatus Boolean   @default(false) @map("onboarding_status")
+  fullName         String?   @map("full_name") @db.VarChar(44)
+  phone            String?   @db.VarChar(10)
+  email            String?   @unique
+  clinicName       String    @map("clinic_name") @db.VarChar(44)
+  clinicSlogan     String?   @map("clinic_slogan") @db.VarChar(100)
+  clinicAddress    String?   @map("clinic_address") @db.VarChar(255)
+  clinicLogo       String?   @map("clinic_logo") @db.VarChar(500)
+  patients         Patient[]
+}
+
+model Patient {
+  id                     String          @id @default(uuid()) @db.Uuid
+  dentistId              String          @map("dentist_id") @db.Uuid
+  dentist                Dentist         @relation(fields: [dentistId], references: [id], onDelete: Cascade)
+  fullName               String          @map("full_name") @db.VarChar(100)
+  phone                  String          @db.VarChar(10)
+  dob                    DateTime?
+  gender                 Gender?         @default(PREFER_NOT_TO_SAY)
+  email                  String?
+  locality               String?         @db.VarChar(20)
+  profession             String?         @db.VarChar(20)
+  bloodGroupType         BloodGroupType? @map("blood_group_type")
+  bloodGroupRh           BloodGroupRh?   @map("blood_group_rh")
+  bloodGroupOtherDetails String?         @map("blood_group_other_details") @db.VarChar(50)
+  hasDiabetes            Boolean         @default(false) @map("has_diabetes")
+  hasHypertension        Boolean         @default(false) @map("has_hypertension")
+  isPregnant             Boolean         @default(false) @map("is_pregnant")
+  hasCancerHistory       Boolean         @default(false) @map("has_cancer_history")
+  hasHiv                 Boolean         @default(false) @map("has_hiv")
+  hasKnownAllergies      Boolean         @default(false) @map("has_known_allergies")
+  hasAsthma              Boolean         @default(false) @map("has_asthma")
+  hasBleedingDisorders   Boolean         @default(false) @map("has_bleeding_disorders")
+  hasHeartConditions     Boolean         @default(false) @map("has_heart_conditions")
+  otherMedicalCondition  String?         @map("other_medical_condition") @db.VarChar(100)
+  emergencyContactName   String?         @map("emergency_contact_name")
+  emergencyContactPhone  String?         @map("emergency_contact_phone")
+  createdAt              DateTime        @default(now()) @map("created_at")
+  updatedAt              DateTime        @updatedAt @map("updated_at")
+
+  @@index([dentistId])
+  @@index([dentistId, fullName])
+  @@index([dentistId, phone])
+}
+
+enum Gender {
+  MALE              @map("Male")
+  FEMALE            @map("Female")
+  OTHER             @map("Other")
+  PREFER_NOT_TO_SAY @map("Prefer not to say")
+}
+
+enum BloodGroupType {
+  A
+  B
+  O
+  AB
+  OTHERS @map("Others")
+}
+
+enum BloodGroupRh {
+  POSITIVE @map("+")
+  NEGATIVE @map("-")
+}
