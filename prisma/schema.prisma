@@ -9,50 +9,76 @@ datasource db {
 }
 
 model Dentist {
-  id               String    @id @db.Uuid
-  onboardingStatus Boolean   @default(false) @map("onboarding_status")
-  fullName         String?   @map("full_name") @db.VarChar(44)
-  phone            String?   @db.VarChar(10)
-  email            String?   @unique
-  clinicName       String?   @map("clinic_name") @db.VarChar(44)
-  clinicSlogan     String?   @map("clinic_slogan") @db.VarChar(100)
-  clinicAddress    String?   @map("clinic_address") @db.VarChar(255)
-  clinicLogo       String?   @map("clinic_logo") @db.VarChar(500)
+  id               String           @id @db.Uuid
+  onboardingStatus Boolean          @default(false) @map("onboarding_status")
+  fullName         String?          @map("full_name") @db.VarChar(44)
+  phone            String?          @db.VarChar(10)
+  email            String?          @unique
+  clinicName       String?          @map("clinic_name") @db.VarChar(44)
+  clinicSlogan     String?          @map("clinic_slogan") @db.VarChar(100)
+  clinicAddress    String?          @map("clinic_address") @db.VarChar(255)
+  clinicLogo       String?          @map("clinic_logo") @db.VarChar(500)
   patients         Patient[]
+  chiefComplaints  ChiefComplaint[]
 }
 
 model Patient {
-  id                     String          @id @default(uuid()) @db.Uuid
-  dentistId              String          @map("dentist_id") @db.Uuid
-  dentist                Dentist         @relation(fields: [dentistId], references: [id], onDelete: Cascade)
-  fullName               String          @map("full_name") @db.VarChar(100)
-  phone                  String          @db.VarChar(10)
+  id                     String           @id @default(uuid()) @db.Uuid
+  dentistId              String           @map("dentist_id") @db.Uuid
+  dentist                Dentist          @relation(fields: [dentistId], references: [id], onDelete: Cascade)
+  fullName               String           @map("full_name") @db.VarChar(100)
+  phone                  String           @db.VarChar(10)
   dob                    DateTime?
-  gender                 Gender?         @default(PREFER_NOT_TO_SAY)
+  gender                 Gender?          @default(PREFER_NOT_TO_SAY)
   email                  String?
-  locality               String?         @db.VarChar(20)
-  profession             String?         @db.VarChar(20)
-  bloodGroupType         BloodGroupType? @map("blood_group_type")
-  bloodGroupRh           BloodGroupRh?   @map("blood_group_rh")
-  bloodGroupOtherDetails String?         @map("blood_group_other_details") @db.VarChar(50)
-  hasDiabetes            Boolean         @default(false) @map("has_diabetes")
-  hasHypertension        Boolean         @default(false) @map("has_hypertension")
-  isPregnant             Boolean         @default(false) @map("is_pregnant")
-  hasCancerHistory       Boolean         @default(false) @map("has_cancer_history")
-  hasHiv                 Boolean         @default(false) @map("has_hiv")
-  hasKnownAllergies      Boolean         @default(false) @map("has_known_allergies")
-  hasAsthma              Boolean         @default(false) @map("has_asthma")
-  hasBleedingDisorders   Boolean         @default(false) @map("has_bleeding_disorders")
-  hasHeartConditions     Boolean         @default(false) @map("has_heart_conditions")
-  otherMedicalCondition  String?         @map("other_medical_condition") @db.VarChar(100)
-  emergencyContactName   String?         @map("emergency_contact_name")
-  emergencyContactPhone  String?         @map("emergency_contact_phone")
-  createdAt              DateTime        @default(now()) @map("created_at")
-  updatedAt              DateTime        @updatedAt @map("updated_at")
+  locality               String?          @db.VarChar(20)
+  profession             String?          @db.VarChar(20)
+  bloodGroupType         BloodGroupType?  @map("blood_group_type")
+  bloodGroupRh           BloodGroupRh?    @map("blood_group_rh")
+  bloodGroupOtherDetails String?          @map("blood_group_other_details") @db.VarChar(50)
+  hasDiabetes            Boolean          @default(false) @map("has_diabetes")
+  hasHypertension        Boolean          @default(false) @map("has_hypertension")
+  isPregnant             Boolean          @default(false) @map("is_pregnant")
+  hasCancerHistory       Boolean          @default(false) @map("has_cancer_history")
+  hasHiv                 Boolean          @default(false) @map("has_hiv")
+  hasKnownAllergies      Boolean          @default(false) @map("has_known_allergies")
+  hasAsthma              Boolean          @default(false) @map("has_asthma")
+  hasBleedingDisorders   Boolean          @default(false) @map("has_bleeding_disorders")
+  hasHeartConditions     Boolean          @default(false) @map("has_heart_conditions")
+  otherMedicalCondition  String?          @map("other_medical_condition") @db.VarChar(100)
+  emergencyContactName   String?          @map("emergency_contact_name")
+  emergencyContactPhone  String?          @map("emergency_contact_phone")
+  createdAt              DateTime         @default(now()) @map("created_at")
+  updatedAt              DateTime         @updatedAt @map("updated_at")
+  chiefComplaints        ChiefComplaint[]
 
   @@index([dentistId])
   @@index([dentistId, fullName])
   @@index([dentistId, phone])
+}
+
+model ChiefComplaint {
+  id                        String       @id @default(uuid()) @db.Uuid
+  patientId                 String       @map("patient_id") @db.Uuid
+  patient                   Patient      @relation(fields: [patientId], references: [id], onDelete: Cascade)
+  dentistId                 String       @map("dentist_id") @db.Uuid
+  dentist                   Dentist      @relation(fields: [dentistId], references: [id], onDelete: Cascade)
+  chiefComplaint            String       @map("chief_complaint") @db.VarChar(100)
+  chiefComplaintDescription String?       @map("chief_complaint_description") @db.VarChar(255)
+  location                  String?      @db.VarChar(100)
+  onsetAndDuration          String?      @map("onset_and_duration") @db.VarChar(44)
+  painType                  PainType[]
+  painTypeOther             String?      @map("pain_type_other") @db.VarChar(44)
+  painTiming                PainTiming[]
+  painTimingOther           String?      @map("pain_timing_other") @db.VarChar(44)
+  painSeverity              Int?         @map("pain_severity")  @db.Integer()
+  aggravatingFactors        String?      @map("aggravating_factors") @db.VarChar(44)
+  relievingFactors          String?      @map("relieving_factors") @db.VarChar(44)
+  createdAt                 DateTime     @default(now()) @map("created_at")
+  updatedAt                 DateTime     @updatedAt @map("updated_at")
+
+  @@index([patientId])
+  @@index([dentistId])
 }
 
 enum Gender {
@@ -73,4 +99,20 @@ enum BloodGroupType {
 enum BloodGroupRh {
   POSITIVE @map("+")
   NEGATIVE @map("-")
+}
+
+enum PainType {
+  SHARP
+  DULL_ACHING
+  THROBBING
+  SENSITIVE
+  OTHER
+}
+
+enum PainTiming {
+  CONSTANT
+  INTERMITTENT
+  ON_STIMULUS
+  NIGHT_ONLY
+  OTHER
 }
