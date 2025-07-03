@@ -66,11 +66,10 @@ model ChiefComplaint {
   chiefComplaint            String       @map("chief_complaint") @db.VarChar(100)
   chiefComplaintDescription String?       @map("chief_complaint_description") @db.VarChar(255)
   location                  String?      @db.VarChar(100)
+  status                    ChiefComplaintStatus?
   onsetAndDuration          String?      @map("onset_and_duration") @db.VarChar(44)
-  painType                  PainType[]
-  painTypeOther             String?      @map("pain_type_other") @db.VarChar(44)
-  painTiming                PainTiming[]
-  painTimingOther           String?      @map("pain_timing_other") @db.VarChar(44)
+  painType                  PainType?
+  painTiming                PainTiming?
   painSeverity              Int?         @map("pain_severity")  @db.Integer()
   aggravatingFactors        String?      @map("aggravating_factors") @db.VarChar(44)
   relievingFactors          String?      @map("relieving_factors") @db.VarChar(44)
@@ -106,7 +105,6 @@ enum PainType {
   DULL_ACHING
   THROBBING
   SENSITIVE
-  OTHER
 }
 
 enum PainTiming {
@@ -114,5 +112,11 @@ enum PainTiming {
   INTERMITTENT
   ON_STIMULUS
   NIGHT_ONLY
-  OTHER
 }
+
+enum ChiefComplaintStatus {
+  ACTIVE
+  RESOLVED
+  UNDER_OBSERVATION    
+}
+
